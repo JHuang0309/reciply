@@ -1,3 +1,5 @@
+import { parseWithNLP } from "./nlpParser";
+
 function parseQuantity(quantityStr) {
     const parts = quantityStr.trim().split(' ');
 
@@ -66,6 +68,13 @@ export function parseIngredients(text) {
         };
     });
 }
+
+// export function NPL_parseIngredients(text) {
+//     return text
+//         .split('\n')
+//         .map(line => parseWithNLP(line))
+//         .filter(item => item.description.trim() !== '');
+// }
 
 function formatFraction(decimal) {
     const rounded = Math.round(decimal * 1000) / 1000; // prevent float errors
@@ -162,3 +171,41 @@ export function scaleIngredients(ingredients, multiplier) {
         };
     });
 }
+
+// export function NPL_scaleIngredients(ingredientObj, multiplier) {
+//     let newDescription = ingredientObj.description;
+
+//     if (!Array.isArray(ingredientObj.numbers)) {
+//         // No numbers array to process, just scale main quantity if possible
+//         const newQuantity = ingredientObj.quantity != null 
+//             ? formatFraction(ingredientObj.quantity * multiplier)
+//             : null;
+//         return {
+//             ...ingredientObj,
+//             newQuantity,
+//             description: newDescription,
+//         };
+//     }
+
+//     for (const num of ingredientObj.numbers) {
+//         const scaledValue = (num.value * multiplier);
+//         const formattedScaled = formatFraction(scaledValue);
+
+//         const escapedText = num.text.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+//         const regex = new RegExp(escapedText, 'g');
+
+//         newDescription = newDescription.replace(regex, formattedScaled);
+//     }
+
+//     // now scale the main quantity
+//     // const newQuantity = formatFraction(ingredientObj.quantity * multiplier);
+//     const newQuantity = ingredientObj.quantity != null 
+//         ? formatFraction(ingredientObj.quantity * multiplier)
+//         : null;
+
+//     return {
+//         ...ingredientObj,
+//         newQuantity,
+//         description: newDescription,
+//     };
+// }
