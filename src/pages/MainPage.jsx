@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { scaleIngredients } from '../utils/process_ingredients';
 import { exportIngredientsAsTextFile } from '../utils/export_ingredients';
 
+
+
 function MainPage() {
     const [inputText, setInputText] = useState('');
     const [originalServings, setOriginalServings] = useState(1); // original servings from recipe
@@ -22,6 +24,7 @@ function MainPage() {
     return (
         <>
             <div className="p-4 max-w-6xl mx-auto font-mono">
+                <div className='flex justify-center'><img src="/reciply.png" alt="Reciply Logo" className="h-[6rem] mb-6" /></div>
                 <h1 className="text-xl font-bold mb-4">Reciply</h1>
                 
                 <p className='text-left italic mb-4'>Write or paste the list of ingredients from your recipe here:</p>
