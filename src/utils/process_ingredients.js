@@ -1,86 +1,32 @@
-import { parseWithNLP } from "./nlpParser";
-
+// Helper: parse fractions and mixed fractions into decimals
 function parseQuantity(quantityStr) {
     const parts = quantityStr.trim().split(' ');
-
-    // simple fraction: e.g. 1/2
+  
+    // simple fraction e.g. "1/2"
     if (parts.length === 1 && parts[0].includes('/')) {
-        const [numerator, denominator] = parts[0].split('/');
-        return parseFloat(numerator) / parseFloat(denominator);
+      const [numerator, denominator] = parts[0].split('/');
+      return parseFloat(numerator) / parseFloat(denominator);
     }
-
-    // mixed fraction: e.g. 1 1/2
-    if (parts.length == 2) {
-        
-        const whole = parseFloat(parts[0])
-        const [numerator, denominator] = parts[1].split('/');
-        if (!isNaN(whole) && denominator) {
-            return whole + parseFloat(numerator) / parseFloat(denominator);
-        }
+  
+    // mixed fraction e.g. "1 1/2"
+    if (parts.length === 2 && parts[1].includes('/')) {
+      const whole = parseFloat(parts[0]);
+      const [numerator, denominator] = parts[1].split('/');
+      if (!isNaN(whole) && denominator) {
+        return whole + parseFloat(numerator) / parseFloat(denominator);
+      }
     }
-
-    // whole number or decimal
+  
+    // simple number (int or decimal)
     return parseFloat(quantityStr);
-} 
-
-export function parseIngredients(text) {
-    return text.split('\n').map(line => {
-
-        const match = line.match(/^\D?([\d\s/.\-]+)\s*(.*)$/);
-        // ^([\d/.]+) = matches one or more digits: captures '1', '1.5', '1/2'
-        // \s* = matches optional whitespace
-        // (.*) = matches the remainder of the line
-        // match = [ - , quantity, item]
-
-        if (!match) {
-            return { original: line, quantity: null, unit: '', description: line };
-        }
-        const quantity = parseQuantity(match[1])
-        
-        const remainder = match[2]
-        const unit = remainder.split(' ')[0];
-
-        const noteRegex = /\bnote\s*\d+/i; // skipe cases of "(Note 4)"
-
-        // Find bracketed numbers: e.g. "3/4 cup (185 ml)"
-        const bracketMatches = [...remainder.matchAll(/[\(\[]([^\)\]]*?([\d.\/]+)[^\)\]]*?)[\)\]]/g)];
-        const brackets = bracketMatches.map(m => ({
-            fullMatch: m[0],
-            quantityStr: m[2],
-            index: m.index
-        })).filter(b => !noteRegex.test(b.fullMatch));
-
-        // Find slahed alternative units: e.g. "180g / 6oz cream cheese"
-        const slashMatches = [...remainder.matchAll(/\/\s*([\d.\/]+)\s*\w*/g)];
-        const slashUnits = slashMatches.map(m => ({
-            fullMatch: m[0],
-            quantityStr: m[1],
-            index: m.index
-        }));
-
-        return {
-            original: line,
-            quantity, 
-            unit,
-            description: remainder,
-            brackets,
-            slashUnits
-        };
-    });
 }
-
-// export function NPL_parseIngredients(text) {
-//     return text
-//         .split('\n')
-//         .map(line => parseWithNLP(line))
-//         .filter(item => item.description.trim() !== '');
-// }
-
+  
+// Format decimals back to fractions or decimal strings for readability
 function formatFraction(decimal) {
-    const rounded = Math.round(decimal * 1000) / 1000; // prevent float errors
+    const rounded = Math.round(decimal * 1000) / 1000; // avoid float precision issues
     const whole = Math.floor(rounded);
     const remainder = rounded - whole;
-  
+
     const FRACTION_MAP = {
         0.25: '1/4',
         0.33: '1/3',
@@ -90,122 +36,66 @@ function formatFraction(decimal) {
         0.667: '2/3',
         0.75: '3/4'
     };
-  
-    // Find the best matching fraction
-    const keys = Object.keys(FRACTION_MAP).map(parseFloat);
-    for (const key of keys) {
-        if (Math.abs(remainder - key) < 0.02) {
-            const fractionPart = FRACTION_MAP[key];
-            if (whole === 0) {
-                return fractionPart; // e.g. "1/2"
-            }
-            return `${whole} ${fractionPart}`; // e.g. "2 1/2"
+
+    for (const key in FRACTION_MAP) {
+        if (Math.abs(remainder - parseFloat(key)) < 0.02) {
+        const fractionPart = FRACTION_MAP[key];
+        if (whole === 0) return fractionPart;
+        return `${whole} ${fractionPart}`;
         }
     }
-    // fallbacks
+
     return remainder === 0 ? `${whole}` : rounded.toFixed(2);
 }
   
+function scaleIngredientLine(line, multiplier) {
+    // Replace all numbers except those inside "Note X"
+  
+    // Matches: "1", "1.5", "1/2", "1 1/2"
+    const numberRegex = /\b(\d+\s\d+\/\d+|\d+\/\d+|\d+(\.\d+)?)/g;
+    
+    // First, find the first number in the line to use as main quantity
+    const firstNumberMatch = line.match(numberRegex);
+    let mainQuantity = null;
+    if (firstNumberMatch) {
+        mainQuantity = parseQuantity(firstNumberMatch[0]);
+    }
 
+    let firstNumberRemoved = false;
+  
+    // Replace all numbers by scaled numbers except those in Note
+    const scaledLine = line.replace(numberRegex, (match, _1, _2, offset, fullStr) => {
 
-export function scaleIngredients(ingredients, multiplier) {
-    return ingredients.map(item => {
-        if (item.quantity === null) return {...item, newQuantity: null};
+        const isNote = /note\s*[\d]+/i.test(fullStr.slice(offset - 5, offset + match.length + 5));
+        if (isNote) return match;
 
-        const newQuantity = formatFraction(+(item.quantity * multiplier).toFixed(2))
-        let newDescription = item.description;
-
-        // updated bracketed quantities
-        if (item.brackets && item.brackets.length > 0) {
-            for (const bracket of item.brackets) {
-                const parsed = parseQuantity(bracket.quantityStr);
-                const scaled = +(parsed * multiplier).toFixed(2);
-                const replacement = bracket.fullMatch.replace(
-                    bracket.quantityStr,
-                    formatFraction(scaled)
-                );
-
-                const escapedMatch = bracket.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape for regex
-                const regex = new RegExp(escapedMatch, 'g');
-                newDescription = newDescription.replace(regex, replacement);
-
-            }
+        if (!firstNumberRemoved) {
+            firstNumberRemoved = true;
+            return ''; // Remove the first number entirely
         }
-        
-        // updated slashed quantity alternatives
-        if (item.slashUnits && item.slashUnits.length > 0) {
-            for (const slash of item.slashUnits) {
-                const parsed = parseQuantity(slash.quantityStr);
-                const scaled = +(parsed * multiplier).toFixed(2);
-                const replacement = slash.fullMatch.replace(
-                    slash.quantityStr,
-                    formatFraction(scaled)
-                );
-        
-                const escapedMatch = slash.fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const regex = new RegExp(escapedMatch, 'g');
-                newDescription = newDescription.replace(regex, replacement);
-            }
-        }
-
-        // replace other inline quantities (e.g. "2 cups grated carrot, about 2 carrots")
-        newDescription = newDescription.replace(/\b(\d+(\.\d+)?|\d+\s+\d+\/\d+|\d+\/\d+)\b/g, (match, numStr, _, offset, fullStr) => {
-            // Avoid touching "Note 4" or already processed matches
-            const isNote = /note\s*[\d]+/i.test(fullStr.slice(offset - 5, offset + match.length + 5));
-            if (isNote) return match;
-
-            const parsed = parseQuantity(match);
-            if (isNaN(parsed)) return match;
-
-            const scaled = +(parsed * multiplier).toFixed(2);
-            return formatFraction(scaled);
-        });
-
-
-
-
-        return {
-            ...item,
-            newQuantity,
-            description: newDescription
-        };
+    
+        const parsed = parseQuantity(match);
+        if (isNaN(parsed)) return match;
+    
+        const scaled = parsed * multiplier;
+        return formatFraction(scaled);
     });
+  
+    return {
+        original: line,
+        newQuantity: mainQuantity !== null ? formatFraction(mainQuantity * multiplier) : null,
+        description: scaledLine
+    };
 }
 
-// export function NPL_scaleIngredients(ingredientObj, multiplier) {
-//     let newDescription = ingredientObj.description;
-
-//     if (!Array.isArray(ingredientObj.numbers)) {
-//         // No numbers array to process, just scale main quantity if possible
-//         const newQuantity = ingredientObj.quantity != null 
-//             ? formatFraction(ingredientObj.quantity * multiplier)
-//             : null;
-//         return {
-//             ...ingredientObj,
-//             newQuantity,
-//             description: newDescription,
-//         };
-//     }
-
-//     for (const num of ingredientObj.numbers) {
-//         const scaledValue = (num.value * multiplier);
-//         const formattedScaled = formatFraction(scaledValue);
-
-//         const escapedText = num.text.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-//         const regex = new RegExp(escapedText, 'g');
-
-//         newDescription = newDescription.replace(regex, formattedScaled);
-//     }
-
-//     // now scale the main quantity
-//     // const newQuantity = formatFraction(ingredientObj.quantity * multiplier);
-//     const newQuantity = ingredientObj.quantity != null 
-//         ? formatFraction(ingredientObj.quantity * multiplier)
-//         : null;
-
-//     return {
-//         ...ingredientObj,
-//         newQuantity,
-//         description: newDescription,
-//     };
-// }
+export function scaleIngredients(text, multiplier) {
+    return text.split('\n').map(line => {
+      // Remove leading characters that are NOT digits or letters
+      const cleanedLine = line.replace(/^[^a-zA-Z0-9]+/, '');
+  
+      // Now scale this cleaned line
+      return scaleIngredientLine(cleanedLine, multiplier);
+    });
+}
+  
+  

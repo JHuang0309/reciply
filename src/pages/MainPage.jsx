@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { parseIngredients, scaleIngredients } from '../utils/process_ingredients';
+import { scaleIngredients } from '../utils/process_ingredients';
 
 function MainPage() {
     const [inputText, setInputText] = useState('');
@@ -14,8 +14,7 @@ function MainPage() {
     }, [originalServings, newServings])
 
     useEffect(() => {
-        const newIngredients = parseIngredients(inputText);
-        setIngredients(scaleIngredients(newIngredients, multiplier));
+        setIngredients(scaleIngredients(inputText, multiplier));
     }, [inputText, multiplier])
 
 
@@ -66,7 +65,7 @@ function MainPage() {
                         <td className="border px-2 py-2">{ing.original}</td>
                         <td className="border px-2 py-2">
                             {ing.newQuantity !== null
-                            ? <><span className='font-bold'>{ing.newQuantity}&nbsp;</span><span>{ing.description}</span></> 
+                            ? <><span className='font-bold'>{ing.newQuantity}</span><span>{ing.description}</span></> 
                             : <span className='font-bold text-lg'>{ing.description}</span>}
                         </td>
                         </tr>

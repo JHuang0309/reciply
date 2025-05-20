@@ -14,8 +14,8 @@ function App() {
   return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/reciply" element={<MainPage />} />
+          {/* <Route path="/" element={<LandingPage />} /> */}
+          <Route path="/" element={<MainPage />} />
         </Routes>
       </BrowserRouter>
   );
