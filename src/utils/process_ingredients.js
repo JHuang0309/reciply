@@ -38,13 +38,15 @@ export function parseIngredients(text) {
         const remainder = match[2]
         const unit = remainder.split(' ')[0];
 
+        const noteRegex = /\bnote\s*\d+/i; // skipe cases of "(Note 4)"
+
         // Find bracketed numbers: e.g. "3/4 cup (185 ml)"
         const bracketMatches = [...remainder.matchAll(/[\(\[]([^\)\]]*?([\d.\/]+)[^\)\]]*?)[\)\]]/g)];
         const brackets = bracketMatches.map(m => ({
             fullMatch: m[0],
             quantityStr: m[2],
             index: m.index
-        }));
+        })).filter(b => !noteRegex.test(b.fullMatch));
 
         // Find slahed alternative units: e.g. "180g / 6oz cream cheese"
         const slashMatches = [...remainder.matchAll(/\/\s*([\d.\/]+)\s*\w*/g)];
@@ -136,6 +138,22 @@ export function scaleIngredients(ingredients, multiplier) {
                 newDescription = newDescription.replace(regex, replacement);
             }
         }
+
+        // replace other inline quantities (e.g. "2 cups grated carrot, about 2 carrots")
+        newDescription = newDescription.replace(/\b(\d+(\.\d+)?|\d+\s+\d+\/\d+|\d+\/\d+)\b/g, (match, numStr, _, offset, fullStr) => {
+            // Avoid touching "Note 4" or already processed matches
+            const isNote = /note\s*[\d]+/i.test(fullStr.slice(offset - 5, offset + match.length + 5));
+            if (isNote) return match;
+
+            const parsed = parseQuantity(match);
+            if (isNaN(parsed)) return match;
+
+            const scaled = +(parsed * multiplier).toFixed(2);
+            return formatFraction(scaled);
+        });
+
+
+
 
         return {
             ...item,
