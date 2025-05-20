@@ -82,14 +82,17 @@ function MainPage() {
                     </tbody>
                 </table>
                 {inputText && (
-                    <button
-                    className="mt-6 px-4 py-2 text-black border-2 border-black hover:ring-black"
-                    onClick={() => exportIngredientsAsTextFile(ingredients)}
-                    >
-                        Export ingredients list
-                    </button>
+                    <>
+                        <button
+                        className="mt-6 px-4 py-2 text-black border-2 border-black hover:ring-black"
+                        onClick={() => exportIngredientsAsTextFile(ingredients)}
+                        >
+                            Export ingredients list
+                        </button>
+                        <p className='mt-8 italic text-red-400'>Have fun cooking!</p>
+                    </>
                 )}
-                <p className='mt-8 italic text-red-400'>Have fun cooking!</p>
+                
             </div>
         </>
     );
