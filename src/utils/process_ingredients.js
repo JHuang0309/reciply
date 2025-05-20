@@ -28,14 +28,18 @@ function formatFraction(decimal) {
     const remainder = rounded - whole;
 
     const FRACTION_MAP = {
+        0.125: '1/8',
         0.25: '1/4',
-        0.33: '1/3',
         0.333: '1/3',
+        0.375: '3/8',
         0.5: '1/2',
-        0.66: '2/3',
+        0.625: '5/8',
+        0.666: '2/3',
         0.667: '2/3',
-        0.75: '3/4'
+        0.75: '3/4',
+        0.875: '7/8'
     };
+    
 
     for (const key in FRACTION_MAP) {
         if (Math.abs(remainder - parseFloat(key)) < 0.02) {
