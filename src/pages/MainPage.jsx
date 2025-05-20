@@ -36,8 +36,8 @@ function MainPage() {
                     className="w-full border p-2 mb-4"
                 />
 
-                <div className="flex flex-col gap-4 mb-8">
-                    <div className='italic text-left'>
+                <div className="flex flex-col gap-4 mb-10 mt-10">
+                    <div className='italic text-left mb-4'>
                         Enter the number of servings the original recipe makes, then specify how many servings you'd like to prepare.
                     </div>
                     <div className='flex justify-center'>
