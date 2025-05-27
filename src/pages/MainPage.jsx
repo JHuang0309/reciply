@@ -90,13 +90,13 @@ function MainPage() {
                             <div style={cardHeaderStyle} className="mb-4">
                                 <div className="flex items-center gap-2 ">
                                     <Calculator className="h-7 w-7 text-orange-500"></Calculator>
-                                    <h3 className='text-2xl font-semibold leadning-none '>Recipe Scaler</h3>
+                                    <h3 className='text-2xl font-semibold leadning-none dark:text-slate-800'>Recipe Scaler</h3>
                                 </div>
                             </div>
                             <p className='text-left text-gray-500'>Paste your ingredient list and set your desired servings</p>
                             <form onSubmit={handleSubmit}>
                                 <div className='text-left py-6'>
-                                    <div className="font-semibold mb-4">Ingredient List</div>
+                                    <div className="font-semibold mb-4 dark:text-slate-800">Ingredient List</div>
                                     <textarea
                                         rows={6}
                                         value={inputText}
@@ -107,9 +107,9 @@ function MainPage() {
 2 large eggs
 1 teaspoon vanilla extract
 1/2 cup milk`}
-                                        className="flex min-h-[200px] w-full rounded-md border border-slate-200 bg-gray-50 px-3 py-2 text-md placeholder:text-muted-foreground placeholder:text-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50 md:text-md"
+                                        className="flex min-h-[200px] w-full rounded-md border border-slate-200 bg-gray-50 px-3 py-2 text-md placeholder:text-muted-foreground placeholder:text-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-800 md:text-md"
                                     />
-                                    <div className='grid grid-cols-2 gap-4 my-6'>
+                                    <div className='grid grid-cols-2 gap-4 my-6 dark:text-slate-800'>
                                         <div className='text-md'>
                                             <p className='font-semibold mb-4'>Original Servings</p>
                                             <input
@@ -144,7 +144,7 @@ function MainPage() {
                             <div style={cardHeaderStyle} className="flex mb-6 justify-between">
                                 <div className="flex items-center">
                                     <Utensils className="h-7 w-7 mr-3 text-orange-500"></Utensils>
-                                    <h3 className='text-2xl font-semibold'>Scaled Recipe</h3>
+                                    <h3 className='text-2xl font-semibold dark:text-slate-800'>Scaled Recipe</h3>
                                 </div>
                                 <div className="flex justify-end">
                                     {ingredientsScaled && (
@@ -160,7 +160,7 @@ function MainPage() {
                             <p className='text-left text-gray-500 mb-4'>Here is your scaled list of ingredients</p>
                             {ingredientsScaled ? (
                                 <table>
-                                    <tbody className='text-left'>
+                                    <tbody className='text-left dark:text-slate-800'>
                                         {ingredients.map((ing, i) => (
                                         <tr key={i}>
                                             <td className="px-1 py-1">
