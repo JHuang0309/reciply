@@ -47,6 +47,23 @@ function MainPage() {
         setIngredients(scaleIngredients(inputText, multiplier));
     }
 
+    const copyToClipboard = () => {
+        if (ingredientsScaled) {
+            const text = ingredients.map(ing => {
+                if (ing.newQuantity !== null) {
+                    return `${ing.newQuantity}${ing.description}`;
+                } else {
+                    return ing.description;
+                }
+            }).join('\n');
+            navigator.clipboard.writeText(text);
+            toast({
+                title: 'Copied!',
+                description: 'Scaled recipe copied to clipboard.',
+            });
+        }
+    };
+
     return (
         <>
             <div className='min-h-screen bg-gradient-to-b from-orange-50 to slate-100 dark:from-slate-900 dark:to-slate-800'>
@@ -90,7 +107,7 @@ function MainPage() {
 2 large eggs
 1 teaspoon vanilla extract
 1/2 cup milk`}
-                                        className="flex min-h-[200px] w-full rounded-md border border-slate-200 bg-gray-50 px-3 py-2 text-sm placeholder:text-muted-foreground placeholder:text-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                                        className="flex min-h-[200px] w-full rounded-md border border-slate-200 bg-gray-50 px-3 py-2 text-md placeholder:text-muted-foreground placeholder:text-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50 md:text-md"
                                     />
                                     <div className='grid grid-cols-2 gap-4 my-6'>
                                         <div className='text-md'>
@@ -124,10 +141,20 @@ function MainPage() {
 
                         {/* Output Section */}
                         <div style={cardStyle} className="p-6 bg-white dark:bg-slate-800 border border-slate-200">
-                            <div style={cardHeaderStyle} className="mb-6">
+                            <div style={cardHeaderStyle} className="flex mb-6 justify-between">
                                 <div className="flex items-center">
                                     <Utensils className="h-7 w-7 mr-3 text-orange-500"></Utensils>
                                     <h3 className='text-2xl font-semibold'>Scaled Recipe</h3>
+                                </div>
+                                <div className="flex justify-end">
+                                    {ingredientsScaled && (
+                                        <button
+                                            onClick={() => copyToClipboard()}
+                                            className="flex items-center gap-2 text-sm text-gray-500 hover:text-orange-500 transition-colors">
+                                            <Copy className="h-4 w-4" />
+                                            Copy
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                             <p className='text-left text-gray-500 mb-4'>Here is your scaled list of ingredients</p>
