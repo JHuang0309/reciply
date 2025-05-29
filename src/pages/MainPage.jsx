@@ -236,7 +236,7 @@ function MainPage() {
                                     Organise your ingredients and instructions for the perfect cooking experience
                                 </p>
                             </div>
-                        </div>
+                        
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             {/* Left Section - Ingredients */}
                             <div className={`bg-white rounded-xl shadow-lg border ${theme.attr5} p-6 lg:col-span-1`}>
@@ -316,10 +316,10 @@ Example:
                                 </div>
                             </div>
                             </div>
+                            </div>
                         </>
-                        
-                        
-                    )}                    
+                    )}     
+                                   
                 </main>
                 {/* Footer */}
                 <footer className="bg-white border-t border-gray-200">
