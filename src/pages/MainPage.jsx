@@ -3,7 +3,18 @@ import { scaleIngredients } from '../utils/process_ingredients';
 import { exportIngredientsAsTextFile } from '../utils/export_ingredients';
 
 import { ChefHat, Calculator, Utensils, Copy } from 'lucide-react';
+import ThemeDropdown from '../components/theme-dropdown';
+import ChefModeToggle from '../components/chefMode-toggle';
 
+const themes = [
+  { color: "bg-red-500", attr1: "from-red-50", attr2: "focus-visible:ring-red-500", attr3: "hover:bg-red-400", attr4: "hover:text-red-500", text: "text-red-500", value: "0" },
+  { color: "bg-orange-500", attr1: "from-orange-50", attr2: "focus-visible:ring-orange-500", attr3: "hover:bg-orange-400", attr4: "hover:text-orange-500", text: "text-orange-500", value: "1" },
+  { color: "bg-yellow-500", attr1: "from-yellow-50", attr2: "focus-visible:ring-yellow-500", attr3: "hover:bg-yellow-400", attr4: "hover:text-yellow-500", text: "text-yellow-500", value: "2" },
+  { color: "bg-green-500", attr1: "from-green-50", attr2: "focus-visible:ring-green-500", attr3: "hover:bg-green-400", attr4: "hover:text-green-500", text: "text-green-500", value: "3" },
+  { color: "bg-blue-500", attr1: "from-blue-50", attr2: "focus-visible:ring-blue-500", attr3: "hover:bg-blue-400", attr4: "hover:text-blue-500", text: "text-blue-500", value: "4" },
+  { color: "bg-indigo-500", attr1: "from-indigo-50", attr2: "focus-visible:ring-indigo-500", attr3: "hover:bg-indigo-400", attr4: "hover:text-indigo-500", text: "text-indigo-500", value: "5" },
+  { color: "bg-purple-500", attr1: "from-purple-50", attr2: "focus-visible:ring-purple-500", attr3: "hover:bg-purple-400", attr4: "hover:text-purple-500", text: "text-purple-500", value: "6" },
+]
 
 function MainPage() {
     const [inputText, setInputText] = useState('');
@@ -12,7 +23,13 @@ function MainPage() {
     const [multiplier, setMultiplier] = useState(1)
     const [ingredients, setIngredients] = useState([]) // final list of scaled ingredients
     const [ingredientsScaled, setIngredientsScaled] = useState(false) // flag for scaled ingredients 
+    const [theme, setTheme] = useState(themes[1])
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isChefMode, setIsChefMode] = useState(false);
 
+    const setAppearance = (t) => {
+        setTheme(themes[t])
+    }
 
     useEffect(() => {
         setMultiplier(newServings / originalServings);
@@ -27,6 +44,18 @@ function MainPage() {
             setIngredientsScaled(false);
         }
     }, [ingredients])
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 60) {
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const cardStyle = {
         backgroundColor: 'white',
@@ -66,17 +95,22 @@ function MainPage() {
 
     return (
         <>
-            <div className='min-h-screen bg-gradient-to-b from-orange-50 to slate-100 dark:from-slate-900 dark:to-slate-800'>
+            <div className={`min-h-screen bg-gradient-to-b ${theme.attr1} to slate-100 dark:from-slate-900 dark:to-slate-800`}>
                 {/* Header */}
-                <header className='bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50 backdrop-blur-sm'>
+                <header className={`flex justify-between border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50 backdrop-blur-sm transition-colors duration-300 ${isScrolled ? 'bg-white/30 dark:bg-slate-900/30' : 'bg-white/95 dark:bg-slate-900/95'}`}>
                     <div className='flex items-center space-x-3 h-16 pl-4'>
                         <div className='flex justify-center'><img src="/reciply.png" alt="Reciply Logo" className="h-[2.5rem]" /></div>
                         <p className="text-lg font-bold">Reciply</p>
                     </div>
+                    <div className='flex items-center gap-4'>
+                        <ChefModeToggle setChefMode={setIsChefMode} />
+                        <ThemeDropdown currentTheme={theme} setTheme={setAppearance} />
+                    </div>
+                    
                 </header>
                 <main className="p-4 max-w-6xl mx-auto py-16">
                     <h2 className="text-5xl font-bold text-slate-900 dark:text-slate-100 mb-6">
-            Scale Any <span className="text-orange-500">Recipe</span> Instantly
+            Scale Any <span className={`${theme.text}`}>Recipe</span> Instantly
                     </h2>
                     <p className="text-xl text-slate-600 dark:text-slate-400 mb-16">
                         Paste your ingredient list, set your servings, and get perfectly scaled measurements in seconds. 
@@ -89,7 +123,7 @@ function MainPage() {
                         <div style={cardStyle} className="p-6 bg-white dark:bg-slate-800 border border-slate-200">
                             <div style={cardHeaderStyle} className="mb-4">
                                 <div className="flex items-center gap-2 ">
-                                    <Calculator className="h-7 w-7 text-orange-500"></Calculator>
+                                    <Calculator className={`h-7 w-7 ${theme.text}`}></Calculator>
                                     <h3 className='text-2xl font-semibold leadning-none dark:text-slate-800'>Recipe Scaler</h3>
                                 </div>
                             </div>
@@ -107,7 +141,7 @@ function MainPage() {
 2 large eggs
 1 teaspoon vanilla extract
 1/2 cup milk`}
-                                        className="flex min-h-[200px] w-full rounded-md border border-slate-200 bg-gray-50 px-3 py-2 text-md placeholder:text-muted-foreground placeholder:text-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-800 md:text-md"
+                                        className={`flex min-h-[200px] w-full rounded-md border border-slate-200 bg-gray-50 px-3 py-2 text-md placeholder:text-muted-foreground placeholder:text-md focus-visible:outline-none focus-visible:ring-1 ${theme.attr2} disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-800 md:text-md`}
                                     />
                                     <div className='grid grid-cols-2 gap-4 my-6 dark:text-slate-800'>
                                         <div className='text-md'>
@@ -117,7 +151,7 @@ function MainPage() {
                                                 value={originalServings == 0 ? '' : originalServings}
                                                 placeholder='Enter value'
                                                 onChange={(e) => setOriginalServings(+e.target.value)}
-                                                className='bg-gray-50 border border-slate-200 rounded-md px-3 py-2 w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500'/>
+                                                className={`bg-gray-50 border border-slate-200 rounded-md px-3 py-2 w-full focus-visible:outline-none focus-visible:ring-1 ${theme.attr2}`}/>
                                         </div>
                                         <div className='text-md'>
                                             <p className='font-semibold mb-4'>Desired Servings</p>
@@ -126,12 +160,12 @@ function MainPage() {
                                                 value={newServings == 0 ? '' : newServings}
                                                 placeholder='Enter value'
                                                 onChange={(e) => setNewServings(+e.target.value)}
-                                                className='bg-gray-50 border border-slate-200 rounded-md px-3 py-2 w-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500'/>
+                                                className={`bg-gray-50 border border-slate-200 rounded-md px-3 py-2 w-full focus-visible:outline-none focus-visible:ring-1 ${theme.attr}`}/>
                                         </div>
                                     </div>
                                     <button
                                         type="submit"
-                                        className="flex justify-center w-full bg-orange-500 font-semibold py-2 rounded-md hover:bg-orange-400 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0">
+                                        className={`flex justify-center w-full ${theme.color} font-semibold py-2 rounded-md ${theme.attr3} transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-0`}>
                                         <Calculator className="text-white inline-block h-5 w-5" />
                                         <p className='text-white ml-2'>Scale Recipe</p>
                                     </button>
@@ -143,14 +177,14 @@ function MainPage() {
                         <div style={cardStyle} className="p-6 bg-white dark:bg-slate-800 border border-slate-200">
                             <div style={cardHeaderStyle} className="flex mb-6 justify-between">
                                 <div className="flex items-center">
-                                    <Utensils className="h-7 w-7 mr-3 text-orange-500"></Utensils>
+                                    <Utensils className={`h-7 w-7 mr-3 ${theme.text}`}></Utensils>
                                     <h3 className='text-2xl font-semibold dark:text-slate-800'>Scaled Recipe</h3>
                                 </div>
                                 <div className="flex justify-end">
                                     {ingredientsScaled && (
                                         <button
                                             onClick={() => copyToClipboard()}
-                                            className="flex items-center gap-2 text-sm text-gray-500 hover:text-orange-500 transition-colors">
+                                            className={`flex items-center gap-2 text-sm text-gray-500 ${theme.attr4} transition-colors`}>
                                             <Copy className="h-4 w-4" />
                                             Copy
                                         </button>
@@ -186,6 +220,17 @@ function MainPage() {
                             )}
                         </div>
                     </div>
+
+                    {!isChefMode ? (
+                        <div className="text-center">
+                            <ChefHat className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                            <p className="text-sm text-gray-600">Activate Chef Mode to start cooking with enhanced features</p>
+                        </div>
+                    ) : (
+                        <div className="animate-in slide-in-from-bottom duration-500">
+                            
+                        </div>
+                    )}
 
                     
                     {/* <p className='text-left italic mb-4'>Write or paste the list of ingredients from your recipe here:</p>
@@ -258,6 +303,37 @@ function MainPage() {
                     )} */}
                     
                 </main>
+                {/* Footer */}
+                <footer className="bg-white border-t border-gray-200">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="text-center">
+                        <div className="flex items-center justify-center mb-4">
+                        <div className='flex justify-center'><img src="/reciply.png" alt="Reciply Logo" className="h-[2.5rem]" /></div>
+                        <span className="text-xl font-bold text-gray-800">Reciply</span>
+                        </div>
+                        <p className="text-gray-600 text-sm mb-4">
+                        Your ultimate cooking companion for delicious recipes and culinary adventures.
+                        </p>
+                        <div className="flex justify-center space-x-6 text-sm text-gray-500">
+                        <a href="#" className={`transition-colors duration-200 ${theme.text} ${theme.attr4}`}>
+                            About
+                        </a>
+                        <a href="#" className={`transition-colors duration-200 ${theme.text} ${theme.attr4}`}>
+                            Privacy
+                        </a>
+                        <a href="#" className={`transition-colors duration-200 ${theme.text} ${theme.attr4}`}>
+                            Terms
+                        </a>
+                        <a href="#" className={`transition-colors duration-200 ${theme.text} ${theme.attr4}`}>
+                            Contact
+                        </a>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-gray-100">
+                        <p className="text-xs text-gray-400">© 2025 Reciply. All rights reserved.</p>
+                        </div>
+                    </div>
+                    </div>
+                </footer>
             </div>
         </>
     );
