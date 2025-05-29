@@ -7,13 +7,13 @@ import ThemeDropdown from '../components/theme-dropdown';
 import ChefModeToggle from '../components/chefMode-toggle';
 
 const themes = [
-  { color: "bg-red-500", attr1: "from-red-50", attr2: "focus-visible:ring-red-500", attr3: "hover:bg-red-400", attr4: "hover:text-red-500", text: "text-red-500", value: "0" },
-  { color: "bg-orange-500", attr1: "from-orange-50", attr2: "focus-visible:ring-orange-500", attr3: "hover:bg-orange-400", attr4: "hover:text-orange-500", text: "text-orange-500", value: "1" },
-  { color: "bg-yellow-500", attr1: "from-yellow-50", attr2: "focus-visible:ring-yellow-500", attr3: "hover:bg-yellow-400", attr4: "hover:text-yellow-500", text: "text-yellow-500", value: "2" },
-  { color: "bg-green-500", attr1: "from-green-50", attr2: "focus-visible:ring-green-500", attr3: "hover:bg-green-400", attr4: "hover:text-green-500", text: "text-green-500", value: "3" },
-  { color: "bg-blue-500", attr1: "from-blue-50", attr2: "focus-visible:ring-blue-500", attr3: "hover:bg-blue-400", attr4: "hover:text-blue-500", text: "text-blue-500", value: "4" },
-  { color: "bg-indigo-500", attr1: "from-indigo-50", attr2: "focus-visible:ring-indigo-500", attr3: "hover:bg-indigo-400", attr4: "hover:text-indigo-500", text: "text-indigo-500", value: "5" },
-  { color: "bg-purple-500", attr1: "from-purple-50", attr2: "focus-visible:ring-purple-500", attr3: "hover:bg-purple-400", attr4: "hover:text-purple-500", text: "text-purple-500", value: "6" },
+  { color: "bg-red-500", attr1: "from-red-50", attr2: "focus-visible:ring-red-500", attr3: "hover:bg-red-400", attr4: "hover:text-red-500", attr5: "border-red-200", text: "text-red-500", value: "0" },
+  { color: "bg-orange-500", attr1: "from-orange-50", attr2: "focus-visible:ring-orange-500", attr3: "hover:bg-orange-400", attr4: "hover:text-orange-500", attr5: "border-orange-200", text: "text-orange-500", value: "1" },
+  { color: "bg-yellow-500", attr1: "from-yellow-50", attr2: "focus-visible:ring-yellow-500", attr3: "hover:bg-yellow-400", attr4: "hover:text-yellow-500", attr5: "border-yellow-200", text: "text-yellow-500", value: "2" },
+  { color: "bg-green-500", attr1: "from-green-50", attr2: "focus-visible:ring-green-500", attr3: "hover:bg-green-400", attr4: "hover:text-green-500", attr5: "border-green-200", text: "text-green-500", value: "3" },
+  { color: "bg-blue-500", attr1: "from-blue-50", attr2: "focus-visible:ring-blue-500", attr3: "hover:bg-blue-400", attr4: "hover:text-blue-500", attr5: "border-blue-200", text: "text-blue-500", value: "4" },
+  { color: "bg-indigo-500", attr1: "from-indigo-50", attr2: "focus-visible:ring-indigo-500", attr3: "hover:bg-indigo-400", attr4: "hover:text-indigo-500", attr5: "border-indigo-200", text: "text-indigo-500", value: "5" },
+  { color: "bg-purple-500", attr1: "from-purple-50", attr2: "focus-visible:ring-purple-500", attr3: "hover:bg-purple-400", attr4: "hover:text-purple-500", attr5: "border-purple-200", text: "text-purple-500", value: "6" },
 ]
 
 function MainPage() {
@@ -23,6 +23,7 @@ function MainPage() {
     const [multiplier, setMultiplier] = useState(1)
     const [ingredients, setIngredients] = useState([]) // final list of scaled ingredients
     const [ingredientsScaled, setIngredientsScaled] = useState(false) // flag for scaled ingredients 
+    const [instructions, setInstructions] = useState("")
     const [theme, setTheme] = useState(themes[1])
     const [isScrolled, setIsScrolled] = useState(false);
     const [isChefMode, setIsChefMode] = useState(false);
@@ -212,7 +213,7 @@ function MainPage() {
                                 </table>
                             
                             ) : (
-                                <div className="flex flex-col h-full justify-center text-center py-12 text-slate-500 dark:text-slate-400 pb-20">
+                                <div className="flex flex-col h-full text-center py-12 text-slate-500 dark:text-slate-400 pt-30">
                                     <ChefHat className="h-12 w-12 mx-auto mb-4 opacity-50" />
                                     <p>Your scaled recipe will appear here</p>
                                     <p className="text-sm">Paste ingredients and click "Scale Recipe"</p>
@@ -227,81 +228,98 @@ function MainPage() {
                             <p className="text-sm text-gray-600">Activate Chef Mode to start cooking with enhanced features</p>
                         </div>
                     ) : (
-                        <div className="animate-in slide-in-from-bottom duration-500">
-                            
-                        </div>
-                    )}
-
-                    
-                    {/* <p className='text-left italic mb-4'>Write or paste the list of ingredients from your recipe here:</p>
-                    <textarea
-                        rows={6}
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        placeholder="Paste ingredients here..."
-                        className="w-full border p-2 mb-4"
-                    />
-
-                    <div className="flex flex-col gap-4 mb-10 mt-10">
-                        <div className='italic text-left mb-4'>
-                            Enter the number of servings the original recipe makes, then specify how many servings you'd like to prepare.
-                        </div>
-                        <div className='flex justify-center'>
-                            <label className='mr-8'>
-                            Original Servings:
-                            <input
-                                type="number"
-                                value={originalServings == 0 ? '' : originalServings}
-                                placeholder='Enter value'
-                                onChange={(e) => setOriginalServings(+e.target.value)}
-                                className="border ml-2 min-w-4 pl-1"
-                            />
-                            </label>
-                            <label>
-                            New Servings:
-                            <input
-                                type="number"
-                                value={newServings == 0 ? '' : newServings}
-                                placeholder='Enter value'
-                                onChange={(e) => setNewServings(+e.target.value)}
-                                className="border ml-2 min-w-4 pl-1"
-                            />
-                            </label>
-                        </div>
-                    </div>
-
-                    <table className="w-full border-collapse">
-                        <thead>
-                        <tr>
-                            <th className="border px-2 py-1 text-xl">Original Ingredients</th>
-                            <th className="border px-2 py-1 text-xl">Scaled Ingredients</th>
-                        </tr>
-                        </thead>
-                        <tbody className='text-left'>
-                            {ingredients.map((ing, i) => (
-                                <tr key={i}>
-                                <td className="border px-2 py-2">{ing.original}</td>
-                                <td className="border px-2 py-2">
-                                    {ing.newQuantity !== null
-                                    ? <><span className='font-bold'>{ing.newQuantity}</span><span>{ing.description}</span></> 
-                                    : <span className='font-bold text-lg'>{ing.description}</span>}
-                                </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    {inputText && (
                         <>
-                            <button
-                            className="mt-6 px-4 py-2 text-black border-2 border-black hover:ring-black"
-                            onClick={() => exportIngredientsAsTextFile(ingredients)}
-                            >
-                                Export ingredients list
-                            </button>
-                            <p className='mt-8 italic text-red-400'>Have fun cooking!</p>
+                        <div className="animate-in slide-in-from-bottom duration-500">
+                            <div className="text-left mb-6">
+                                <h1 className="text-3xl font-bold text-gray-800 mb-2">Recipe Workspace</h1>
+                                <p className="text-gray-600">
+                                    Organise your ingredients and instructions for the perfect cooking experience
+                                </p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Left Section - Ingredients */}
+                            <div className={`bg-white rounded-xl shadow-lg border ${theme.attr5} p-6 lg:col-span-1`}>
+                                <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+                                    <span className="mr-2">🥘</span>
+                                    Ingredients
+                                </h2>
+                                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                    Scaled ingredients
+                                </span>
+                                </div>
+
+                                {/* Ingredients List */}
+                                <div className="space-y-2 max-h-96 overflow-y-auto">
+                                {ingredientsScaled ? (
+                                    <table>
+                                        <tbody className='text-left dark:text-slate-800'>
+                                            {ingredients.map((ing, i) => (
+                                            <tr key={i}>
+                                                <td className="px-1 py-1">
+                                                {ing.newQuantity !== null
+                                                    ? <>
+                                                        <span className='font-bold'>{ing.newQuantity}</span>
+                                                        <span>{ing.description}</span>
+                                                    </>
+                                                    : <span>{ing.description}</span>
+                                                }
+                                                </td>
+                                            </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                
+                                ) : (
+                                    <div className="flex flex-col h-full text-center py-12 text-slate-500 dark:text-slate-400 pt-30">
+                                        <ChefHat className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                        <p>Your scaled recipe will appear here</p>
+                                        <p className="text-sm">Paste ingredients above and click "Scale Recipe"</p>
+                                    </div>
+                                )}
+                                </div>
+                            </div>
+
+                            {/* Right Section - Instructions */}
+                            <div className={`bg-white rounded-xl shadow-lg border ${theme.attr5} p-6 lg:col-span-2`}>
+                                <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+                                    <span className="mr-2">📝</span>
+                                    Instructions
+                                </h2>
+                                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">Paste from online</span>
+                                </div>
+
+                                <textarea
+                                value={instructions}
+                                onChange={(e) => setInstructions(e.target.value)}
+                                placeholder="Paste your recipe instructions here from any online source...
+
+Example:
+1. Preheat oven to 350°F (175°C)
+2. Mix dry ingredients in a large bowl
+3. In another bowl, whisk together eggs, milk, and melted butter
+4. Combine wet and dry ingredients until just mixed
+5. Bake for 20-25 minutes until golden brown"
+                                className={`w-full h-96 p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-1 ${theme.attr2} focus:border-transparent`}
+                                />
+
+                                <div className="mt-4 flex justify-end items-center">
+
+                                <button
+                                    onClick={() => setInstructions("")}
+                                    className="text-sm text-gray-500 hover:text-red-700 transition-colors duration-200"
+                                >
+                                    Clear all
+                                </button>
+                                </div>
+                            </div>
+                            </div>
                         </>
-                    )} */}
-                    
+                        
+                        
+                    )}                    
                 </main>
                 {/* Footer */}
                 <footer className="bg-white border-t border-gray-200">
