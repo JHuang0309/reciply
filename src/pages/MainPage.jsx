@@ -36,6 +36,18 @@ function MainPage() {
         setMultiplier(newServings / originalServings);
     }, [originalServings, newServings])
 
+    // Load from localStorage on mount
+    useEffect(() => {
+        const savedIngredients = localStorage.getItem('reciply_ingredients');
+        const savedInstructions = localStorage.getItem('reciply_instructions');
+        if (savedIngredients) {
+            setInputText(savedIngredients);
+        }
+        if (savedInstructions) {
+            setInstructions(savedInstructions);
+        }
+    }, []);
+
     useEffect(() => {
         setIngredients(scaleIngredients(inputText, multiplier));
     }, [inputText, multiplier])
@@ -45,18 +57,6 @@ function MainPage() {
             setIngredientsScaled(false);
         }
     }, [ingredients])
-
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 60) {
-                setIsScrolled(true);
-            } else {
-                setIsScrolled(false);
-            }
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     const cardStyle = {
         backgroundColor: 'white',
@@ -75,6 +75,13 @@ function MainPage() {
         e.preventDefault();
         setIngredientsScaled(true);
         setIngredients(scaleIngredients(inputText, multiplier));
+        localStorage.setItem('reciply_ingredients', inputText);
+    }
+
+    // Save instructions to localStorage on change
+    const handleInstructionsChange = (e) => {
+        setInstructions(e.target.value);
+        localStorage.setItem('reciply_instructions', e.target.value);
     }
 
     const copyToClipboard = () => {
@@ -293,7 +300,7 @@ function MainPage() {
 
                                 <textarea
                                 value={instructions}
-                                onChange={(e) => setInstructions(e.target.value)}
+                                onChange={handleInstructionsChange}
                                 placeholder="Paste your recipe instructions here from any online source...
 
 Example:
