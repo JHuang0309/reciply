@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 const themes = [
-  { color: "bg-red-500", attr1: "from-red-50", attr2: "focus-visible:ring-red-500", attr3: "hover:bg-red-400", attr4: "hover:text-red-500", text: "text-red-500", value: "0" },
-  { color: "bg-orange-500", attr1: "from-orange-50", attr2: "focus-visible:ring-orange-500", attr3: "hover:bg-orange-400", attr4: "hover:text-orange-500", text: "text-orange-500", value: "1" },
-  { color: "bg-yellow-500", attr1: "from-yellow-50", attr2: "focus-visible:ring-yellow-500", attr3: "hover:bg-yellow-400", attr4: "hover:text-yellow-500", text: "text-yellow-500", value: "2" },
-  { color: "bg-green-500", attr1: "from-green-50", attr2: "focus-visible:ring-green-500", attr3: "hover:bg-green-400", attr4: "hover:text-green-500", text: "text-green-500", value: "3" },
-  { color: "bg-blue-500", attr1: "from-blue-50", attr2: "focus-visible:ring-blue-500", attr3: "hover:bg-blue-400", attr4: "hover:text-blue-500", text: "text-blue-500", value: "4" },
-  { color: "bg-indigo-500", attr1: "from-indigo-50", attr2: "focus-visible:ring-indigo-500", attr3: "hover:bg-indigo-400", attr4: "hover:text-indigo-500", text: "text-indigo-500", value: "5" },
-  { color: "bg-purple-500", attr1: "from-purple-50", attr2: "focus-visible:ring-purple-500", attr3: "hover:bg-purple-400", attr4: "hover:text-purple-500", text: "text-purple-500", value: "6" },
+  { color: "bg-red-500", attr1: "from-red-50", attr2: "focus-visible:ring-red-500", attr3: "hover:bg-red-400", attr4: "hover:text-red-500", attr5: "border-red-200", text: "text-red-500", value: "0" },
+  { color: "bg-orange-500", attr1: "from-orange-50", attr2: "focus-visible:ring-orange-500", attr3: "hover:bg-orange-400", attr4: "hover:text-orange-500", attr5: "border-orange-200", text: "text-orange-500", value: "1" },
+  { color: "bg-yellow-500", attr1: "from-yellow-50", attr2: "focus-visible:ring-yellow-500", attr3: "hover:bg-yellow-400", attr4: "hover:text-yellow-500", attr5: "border-yellow-200", text: "text-yellow-500", value: "2" },
+  { color: "bg-green-500", attr1: "from-green-50", attr2: "focus-visible:ring-green-500", attr3: "hover:bg-green-400", attr4: "hover:text-green-500", attr5: "border-green-200", text: "text-green-500", value: "3" },
+  { color: "bg-blue-500", attr1: "from-blue-50", attr2: "focus-visible:ring-blue-500", attr3: "hover:bg-blue-400", attr4: "hover:text-blue-500", attr5: "border-blue-200", text: "text-blue-500", value: "4" },
+  { color: "bg-indigo-500", attr1: "from-indigo-50", attr2: "focus-visible:ring-indigo-500", attr3: "hover:bg-indigo-400", attr4: "hover:text-indigo-500", attr5: "border-indigo-200", text: "text-indigo-500", value: "5" },
+  { color: "bg-purple-500", attr1: "from-purple-50", attr2: "focus-visible:ring-purple-500", attr3: "hover:bg-purple-400", attr4: "hover:text-purple-500", attr5: "border-purple-200", text: "text-purple-500", value: "6" },
+  { color: "bg-pink-500", attr1: "from-pink-50", attr2: "focus-visible:ring-pink-500", attr3: "hover:bg-pink-400", attr4: "hover:text-pink-500", attr5: "border-pink-200", text: "text-pink-500", value: "7" },
 ]
 
 export default function ThemeDropdown({ currentTheme, setTheme }) {
